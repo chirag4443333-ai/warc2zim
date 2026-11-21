@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import html
 import re
+import unicodedata
 from email.message import Message
 from http import HTTPStatus
 
@@ -211,6 +212,15 @@ def get_record_download_filename(record: ArcWarcRecord) -> str | None:
     if filename in ("", ".", ".."):
         return None
     return filename
+
+
+def is_blank(value: str | None) -> bool:
+    """Whether a text value is missing or made only of invisible characters
+
+    Invisible characters are whitespaces, separators and control / format characters
+    (Unicode categories Z* and C*), e.g. a lone newline or a zero-width space.
+    """
+    return not value or all(unicodedata.category(char)[0] in "ZC" for char in value)
 
 
 def parse_title(content):
